@@ -10,8 +10,13 @@ exports.signup = async (req, res) => {
   var newUser = new User({
     emailAddress: req.body.email,
     userName: req.body.username,
-    password: req.body.password
+    password: req.body.password,
+    isAdmin: req.body.isAdmin
   });
+
+  if (req.body.isAdmin) {
+    newUser.isAdmin = true;
+  }
 
   // ensures no duplicate user
   await User.findOne({ emailAddress: newUser.emailAddress })
@@ -21,6 +26,7 @@ exports.signup = async (req, res) => {
         bcrypt.hash(newUser.password, saltRounds, async (err, hash) => {
           if (err) {
             res.status(401).json({
+              status: "error",
               message: err.message
             });
           } else {
@@ -29,29 +35,33 @@ exports.signup = async (req, res) => {
               .save()
               .then(() => {
                 return res.status(201).json({
-                  message: "login succesful",
+                  status: "success",
+                  message: "Signup succesful",
                   data: {
-                    emailAddress: profile.emailAddress,
-                    userName: profile.userName
+                    emailAddress: newUser.emailAddress,
+                    userName: newUser.userName
                   }
                 });
               })
               .catch((err) => {
                 res.status(401).json({
+                  status: "error",
                   message: err.message
                 });
               });
           }
         });
-      } else {
+      } else if (profile) {
         res.status(401).json({
+          status: "error",
           message: "This profile already exists"
         });
       }
     })
     .catch((err) => {
       res.status(500).json({
-        error: err
+        status: "error",
+        error: err.message
       });
     });
 };
@@ -64,8 +74,12 @@ exports.signin = async (req, res) => {
 
   await User.findOne({ emailAddress: newUser.emailAddress })
     .then((profile) => {
+      console.log(profile);
       if (!profile) {
-        res.send("Profils does not exist");
+        res.status(500).json({
+          status: "error",
+          error: "profile does not exist"
+        });
       } else {
         bcrypt.compare(
           newUser.password,
@@ -73,6 +87,7 @@ exports.signin = async (req, res) => {
           async (err, result) => {
             if (err) {
               res.status(401).json({
+                status: "error",
                 message: err.message
               });
             } else if (result) {
@@ -82,15 +97,17 @@ exports.signin = async (req, res) => {
                 username: profile.username
               }, process.env.secretKey || "defaultKey", { expiresIn: "24h" });
               return res.status(201).json({
+                status: "error",
                 message: "login succesful",
-                token,
                 data: {
                   emailAddress: profile.emailAddress,
-                  userName: profile.userName
+                  userName: profile.userName,
+                  token
                 }
               });
             } else {
               res.status(401).json({
+                status: "error",
                 message: "User unauthorized access"
               });
             }
@@ -100,6 +117,7 @@ exports.signin = async (req, res) => {
     })
     .catch((err) => {
       res.status(500).json({
+        status: "error",
         error: err
       });
     });

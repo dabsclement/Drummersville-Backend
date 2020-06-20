@@ -1,21 +1,41 @@
 var mongoose = require("mongoose");
+const validator = require("validator");
 
 const UserSchema = mongoose.Schema({
+  userName: {
+    type: String,
+    required: true,
+    trim: true,
+    minlength: 3
+  },
   emailAddress: {
     type: String,
     required: true,
     unique: true,
+    trim: true,
+    validate (value) {
+      if (!validator.isEmail(value)) {
+        throw new Error("Email is invalid");
+      }
+    }
   },
-  userName: {
-    type: String,
-    require: true,
-    unique: true,
+  isAdmin: {
+    type: Boolean,
+    default: false
   },
   password: {
     type: String,
-    require: true,
-  },
-});
+    required: true,
+    minlength: 6,
+    trim: true
+  }
+},
+
+{
+  timestamps: true
+}
+);
+
 module.exports = mongoose.model("user", UserSchema);
 
 // // Imports
