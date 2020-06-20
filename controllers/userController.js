@@ -74,7 +74,6 @@ exports.signin = async (req, res) => {
 
   await User.findOne({ emailAddress: newUser.emailAddress })
     .then((profile) => {
-      console.log(profile);
       if (!profile) {
         res.status(500).json({
           status: "error",
@@ -92,9 +91,9 @@ exports.signin = async (req, res) => {
               });
             } else if (result) {
               const token = jwt.sign({
-                email: profile.email,
+                email: profile.emailAddress,
                 userId: profile._id,
-                username: profile.username
+                username: profile.userName
               }, process.env.secretKey || "defaultKey", { expiresIn: "24h" });
               return res.status(201).json({
                 status: "error",

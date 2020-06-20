@@ -7,16 +7,14 @@ const checkAdmin = async (req, res, next) => {
   const userMail = decode.email;
   await userModel.findOne({ emailAddress: userMail })
     .then(data => {
-      console.log(data);
-      if (data.email !== userMail) {
-        res.status(401).json({
-          message: "Auth failed"
-        });
+      if (data.emailAddress !== userMail) {
+        throw new Error("Auth failed");
       }
 
       if (!data.isAdmin) {
         res.status(401).json({
-          message: "You do not have the necessary rights to perform this action"
+          status: "error",
+          message: "Access Forbidden"
         });
       }
       next();
@@ -24,7 +22,7 @@ const checkAdmin = async (req, res, next) => {
 
     .catch((err) => {
       res.status(500).json({
-        status: "Auth failed",
+        status: "error",
         message: err.message
       });
     });
@@ -36,16 +34,14 @@ const checkAuth = async (req, res, next) => {
   const userMail = decode.email;
   await userModel.findOne({ emailAddress: userMail })
     .then(data => {
-      if (data.email !== userMail) {
-        res.status(401).json({
-          message: "Auth failed"
-        });
+      if (data.emailAddress !== userMail) {
+        throw new Error("Auth failed");
       }
       next();
     })
     .catch((err) => {
       res.status(500).json({
-        status: "Auth Failed",
+        status: "error",
         message: err.message
       });
     });
