@@ -1,10 +1,19 @@
 var mongoose = require("mongoose");
 
 const PodcastSchema = mongoose.Schema({
+    Title: {
+     type: String,
+     required: true
+    },
   image: {
     type: String,
-    required: true,
+    required: true
     
+  },
+  Podcasturl:{
+      type: String,
+      required: true
+
   },
   Description: {
     type: String,
