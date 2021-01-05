@@ -9,18 +9,13 @@ const PodcastSchema = mongoose.Schema({
     type: String,
     required: true
 
-<<<<<<< HEAD
   },
-  PodcastUrl: {
+  Podcasturl: {
     type: String,
     required: true
 
   },
   downloadLink: {
-=======
-  },
-  Podcasturl: {
->>>>>>> e78f298eecb37007f41bb59a007eb221fb8dde2e
     type: String,
     required: true
 
@@ -35,11 +30,7 @@ const PodcastSchema = mongoose.Schema({
     default: false
   },
   Tags: {
-<<<<<<< HEAD
-    type: Array,
-=======
     type: Array[String],
->>>>>>> e78f298eecb37007f41bb59a007eb221fb8dde2e
     required: true
 
   }
